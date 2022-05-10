@@ -2,4 +2,5 @@ type: install
 id: ghost-docker
 version: 1
 name: Ghost (Docker install)
-baseUrl: https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/master/ghost.png
+baseUrl: https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/master/
+image: /ghost.png
