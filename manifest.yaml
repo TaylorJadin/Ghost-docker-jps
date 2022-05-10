@@ -1,6 +1,23 @@
 type: install
 id: ghost-docker
-version: 1
+version: '1.0'
+appVersion: latest
 name: Ghost (Docker install)
 baseUrl: https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/master/
-image: /ghost.png
+logo: /ghost.png
+homepage: https://ghost.org/
+
+categories: 
+- apps/content-management
+
+description: 
+  text: Ghost is a free, open-source blogging platform with a user-friendly interface designed to simplify and speed up online publishing process.
+  short: The professional publishing platform
+
+nodes:
+  nodeType: dockerengine
+  nodeGroup: cp
+  cloudlets: 48
+  extip: true
+  displayName: Ghost
+  addons: change-domain
