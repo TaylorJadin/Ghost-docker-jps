@@ -34,7 +34,7 @@ actions:
         -e "s|USEREMAIL|${user.email}|g" \
         -e "s|GHOSTDBPASS|${globals.ghostdbPass}|g" \
         -e "s|ROOTDBPASS|${fn.password}|g" \
-        docker-compose.yml
+          docker-compose.yml
       docker-compose up -d
 
 success: | 
