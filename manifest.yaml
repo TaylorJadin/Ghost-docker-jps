@@ -1,0 +1,5 @@
+type: install
+id: ghost-docker
+version: 1
+name: Ghost (Docker install)
+baseUR
