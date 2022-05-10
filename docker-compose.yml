@@ -11,7 +11,7 @@ services:
       - database__client=mysql
       - database__connection__host=db
       - database__connection__user=ghostdb
-      - database__connection__password=ry1KQRqioTdK49c97yG5
+      - database__connection__password=GHOSTDBPASS
       - database__connection__database=ghostdb
       - VIRTUAL_HOST=DOMAINNAME
       - VIRTUAL_PORT=2368
