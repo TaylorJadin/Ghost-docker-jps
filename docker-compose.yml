@@ -28,10 +28,10 @@ services:
     volumes:
       - ghostdb:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=fEWNHKQd82vhAh85rXjj
+      - MYSQL_ROOT_PASSWORD=ROOTDBPASS
       - MYSQL_DATABASE=ghostdb
       - MYSQL_USER=ghostdb
-      - MYSQL_PASSWORD=ry1KQRqioTdK49c97yG5
+      - MYSQL_PASSWORD=GHOSTDBPASS
     networks:
       - ghost
     restart: unless-stopped

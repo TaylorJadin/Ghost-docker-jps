@@ -15,7 +15,8 @@ description:
   short: The professional publishing platform
 
 globals:
-  ghostdb
+  ghostdbPass: ${fn.password}
+  rootdbPass: ${fn.password}
 
 nodes:
   nodeType: dockerengine
