@@ -47,7 +47,7 @@ actions:
         cd ghost
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/docker-compose.yml
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
-        sed -i.bak \
+        sed -i \
         -e "s|##DOMAIN##|${env.domain}|g" \
         -e "s|##EMAIL##|${user.email}|g" \
         -e "s|##DBPASS##|${globals.ghostdbPass}|g" \
@@ -83,8 +83,8 @@ addons:
       changeDomain:
         - cmd[cp]: |-
             cd ghost
-            sed -i.bak -e "s|${env.domain}|${settings.domain}|g" /root/ghost/.env
-            docker-compose up -d--force-recreate
+            sed -i .bak -e "s|${env.domain}|${settings.domain}|g" /root/ghost/.env
+            docker-compose up -d --force-recreate
 
 success: | 
   **Ghost**: [https://${env.domain}/](https://${env.domain}/)  
