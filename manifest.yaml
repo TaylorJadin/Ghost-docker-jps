@@ -70,10 +70,8 @@ addons:
     actions:
       changeDomain:
         - cmd[cp]: |-
-        sed -i.bak \
-        -e "s|${env.domain}|${settings.domain}|g" \
-        .env
-        docker-compose up -d--force-recreate
+            sed -i.bak -e "s|${env.domain}|${settings.domain}|g" .env
+            docker-compose up -d--force-recreate
 
 success: | 
   **Ghost**: [https://${env.domain}/](https://${env.domain}/)  
