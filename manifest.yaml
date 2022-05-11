@@ -31,7 +31,7 @@ settings:
         type: displayfield
         hideLabel: true
         markup: |
-          IMPORTANT: Make sure the new domain already has an A or CNAME record pointed at it
+          IMPORTANT: the new domain should already have an A record pointed at this environment's IP or a CNAME bound to the environment name.
       - name: domain
         hideLabel: true
         caption: Domain
@@ -94,4 +94,4 @@ success: |
   **Ghost**: [https://${env.domain}/](https://${env.domain}/)
   - Set up Ghost by visiting [${env.domain}/ghost](https://${env.domain}/ghost)
   - You can use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert
-    - If you want to change the domain name point an A record at ${nodes.cp.extIPs} or a CNAME record at ${env.domain}
+  - If you want to change the domain name point an A record at **${nodes.cp.extIPs}** or a CNAME record at **${env.domain}**
