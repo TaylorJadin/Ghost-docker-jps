@@ -4,7 +4,7 @@ services:
   ghost:
     image: ghost:alpine
     volumes:
-      - ghostdata:/var/lib/ghost/content
+      - ./ghostdata:/var/lib/ghost/content
     environment:
       - url=${URL}
       - database__client=mysql
@@ -25,7 +25,7 @@ services:
   db:
     image: mariadb
     volumes:
-      - ghostdb:/var/lib/mysql
+      - ./ghostdb:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${ROOTDB_PASSWORD}
       - MYSQL_DATABASE=ghostdb
@@ -61,11 +61,6 @@ services:
     networks:
       - ghost
     restart: unless-stopped
-
-volumes:
-  certs:
-  ghostdb:
-  ghostdata:
 
 networks:
   ghost:

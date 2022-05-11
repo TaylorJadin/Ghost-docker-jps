@@ -34,7 +34,7 @@ actions:
         sed -i.bak \
         -e "s|##DOMAIN##|${env.domain}|g" \
         -e "s|##EMAIL##|${user.email}|g" \
-        -e "s|##DPPASS##|${globals.ghostdbPass}|g" \
+        -e "s|##DBPASS##|${globals.ghostdbPass}|g" \
         -e "s|##ROOTDBPASS##|${fn.password}|g" \
         .env
         docker-compose up -d
