@@ -30,12 +30,13 @@ actions:
   setup:      
     - cmd[cp]: |-
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/docker-compose.yml
+        weget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
         sed -i.bak \
-        -e "s|DOMAINNAME|${env.domain}|g" \
-        -e "s|USEREMAIL|${user.email}|g" \
-        -e "s|GHOSTDBPASS|${globals.ghostdbPass}|g" \
-        -e "s|ROOTDBPASS|${fn.password}|g" \
-        docker-compose.yml
+        -e "s|##DOMAIN##|${env.domain}|g" \
+        -e "s|##EMAIL##|${user.email}|g" \
+        -e "s|##DPPASS##|${globals.ghostdbPass}|g" \
+        -e "s|##ROOTDBPASS##|${fn.password}|g" \
+        .env
         docker-compose up -d
 
 success: | 

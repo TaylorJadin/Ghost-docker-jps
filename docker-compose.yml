@@ -1,22 +1,21 @@
 version: "2"
 
 services:
-
   ghost:
-    image: ghost
+    image: ghost:alpine
     volumes:
       - ghostdata:/var/lib/ghost/content
     environment:
-      - url=https://DOMAINNAME
+      - url=${URL}
       - database__client=mysql
       - database__connection__host=db
       - database__connection__user=ghostdb
-      - database__connection__password=GHOSTDBPASS
+      - database__connection__password=${GHOSTDB_PASSWORD}
       - database__connection__database=ghostdb
-      - VIRTUAL_HOST=DOMAINNAME
+      - VIRTUAL_HOST=${LETSENCRYPT_DOMAINS}
       - VIRTUAL_PORT=2368
-      - LETSENCRYPT_HOST=DOMAINNAME
-      - LETSENCRYPT_EMAIL=USEREMAIL
+      - LETSENCRYPT_HOST=${LETSENCRYPT_DOMAINS}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     networks:
       - ghost
     depends_on:
@@ -28,10 +27,10 @@ services:
     volumes:
       - ghostdb:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=ROOTDBPASS
+      - MYSQL_ROOT_PASSWORD=${ROOTDB_PASSWORD}
       - MYSQL_DATABASE=ghostdb
       - MYSQL_USER=ghostdb
-      - MYSQL_PASSWORD=GHOSTDBPASS
+      - MYSQL_PASSWORD=${GHOSTDB_PASSWORD}
     networks:
       - ghost
     restart: unless-stopped
