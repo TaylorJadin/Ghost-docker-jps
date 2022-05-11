@@ -31,7 +31,7 @@ settings:
         type: displayfield
         hideLabel: true
         markup: |
-          'IMPORTANT: Make sure the new domain already has an A record pointed at ${nodes.cp.extIPs}, or the domain is already bound to ${env.domain} via a CNAME record.'
+          IMPORTANT: Make sure the new domain already has an A record pointed at ${nodes.cp.extIPs}, or the domain is already bound to ${env.domain} via a CNAME record.
       - name: domain
         hideLabel: true
         caption: Domain
