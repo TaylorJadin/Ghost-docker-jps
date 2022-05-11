@@ -30,7 +30,7 @@ actions:
   setup:      
     - cmd[cp]: |-
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/docker-compose.yml
-        weget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
+        wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
         sed -i.bak \
         -e "s|##DOMAIN##|${env.domain}|g" \
         -e "s|##EMAIL##|${user.email}|g" \
