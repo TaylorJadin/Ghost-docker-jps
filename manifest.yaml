@@ -30,7 +30,8 @@ settings:
       - name: displayfield
         type: displayfield
         hideLabel: true
-        markup: 'IMPORTANT: the new domain should be bound already to the environment via CNAME, ANAME or via A Record'
+        markup: |
+          'IMPORTANT: Make sure the new domain already has an A record pointed at ${nodes.cp.extIPs}, or the domain is already bound to ${env.domain} via a CNAME record.'
       - name: domain
         hideLabel: true
         caption: Domain
@@ -83,8 +84,13 @@ addons:
       changeDomain:
         - cmd[cp]: |-
             cd ghost
-            sed -i .bak -e "s|${env.domain}|${settings.domain}|g" /root/ghost/.env
+            sed -i .bak \
+            -e "s|URL=https://.*|URL=https://${settings.domain}|g" \
+            -e "s|LETSENCRYPT_DOMAINS=.*|LETSENCRYPT_DOMAINS=${settings.domain}|g"
+            /root/ghost/.env
             docker-compose up -d --force-recreate
 
 success: | 
-  **Ghost**: [https://${env.domain}/](https://${env.domain}/)  
+  **Ghost**: [https://${env.domain}/](https://${env.domain}/)
+  - Set up Ghost by visiting [https://${env.domain}/ghost](https://${env.domain}/ghost)
+  - Use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert
