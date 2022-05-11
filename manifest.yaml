@@ -31,7 +31,7 @@ settings:
         type: displayfield
         hideLabel: true
         markup: |
-          IMPORTANT: Make sure the new domain already has an A record pointed at ${nodes.cp.extIPs}, or the domain is already bound to ${env.domain} via a CNAME record.
+          IMPORTANT: Make sure the new domain already has an A or CNAME record pointed at it
       - name: domain
         hideLabel: true
         caption: Domain
@@ -92,5 +92,6 @@ addons:
 
 success: | 
   **Ghost**: [https://${env.domain}/](https://${env.domain}/)
-  - Set up Ghost by visiting [https://${env.domain}/ghost](https://${env.domain}/ghost)
-  - Use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert
+  - Set up Ghost by visiting [${env.domain}/ghost](https://${env.domain}/ghost)
+  - You can use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert
+    - If you want to change the domain name point an A record at ${nodes.cp.extIPs} or a CNAME record at ${env.domain}
