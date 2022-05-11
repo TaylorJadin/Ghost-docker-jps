@@ -22,6 +22,20 @@ nodes:
   nodeGroup: cp
   cloudlets: 16
   extip: true
+  addons: change-domain
+
+settings:
+domain: 
+  fields: 
+    - name: displayfield
+      type: displayfield
+      hideLabel: true
+      markup: Make sure the the new domain is bound already to the environment via CNAME or via A Record 
+    - name: domain
+      hideLabel: true
+      caption: Domain
+      type: string
+      vtype: extdomain
 
 onInstall:
   - setup
@@ -38,6 +52,28 @@ actions:
         -e "s|##ROOTDBPASS##|${fn.password}|g" \
         .env
         docker-compose up -d
+
+addons:
+  - id: change-domain    
+    name: Domain Configuration    
+    description: You can change your current domain and issue valid Let's Encrypt certificates.
+    permanent: true
+    buttons:    
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Changing domain...
+        action: changeDomain
+        caption: Change
+        successText: The domain has been updated successfully!
+        settings: domain
+        title: Please specify the new domain name 
+        
+    actions:
+      changeDomain:
+        - cmd[cp]: |-
+        sed -i.bak \
+        -e "s|${env.domain}|${settings.domain}|g" \
+        .env
+        docker-compose up -d--force-recreate
 
 success: | 
   **Ghost**: [https://${env.domain}/](https://${env.domain}/)  

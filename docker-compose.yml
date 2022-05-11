@@ -54,7 +54,7 @@ services:
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
     volumes:
-      - certs:/etc/nginx/certs
+      - ./certs:/etc/nginx/certs
       - /var/run/docker.sock:/var/run/docker.sock:ro
     volumes_from:
       - nginx-proxy
