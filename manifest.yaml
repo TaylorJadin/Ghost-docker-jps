@@ -43,6 +43,8 @@ onInstall:
 actions:
   setup:      
     - cmd[cp]: |-
+        mkdir -p ghost
+        cd ghost
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/docker-compose.yml
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
         sed -i.bak \
@@ -52,6 +54,16 @@ actions:
         -e "s|##ROOTDBPASS##|${fn.password}|g" \
         .env
         docker-compose up -d
+    - env.file.AddFavorite:
+        nodeGroup: cp
+        path: /root/ghost
+        keyword: ghost
+        isDir: true
+    - env.file.AddFavorite:
+        nodeGroup: cp
+        path: /root
+        keyword: home
+        isDir: true
 
 addons:
   - id: change-domain    
@@ -70,7 +82,8 @@ addons:
     actions:
       changeDomain:
         - cmd[cp]: |-
-            sed -i.bak -e "s|${env.domain}|${settings.domain}|g" .env
+            cd ghost
+            sed -i.bak -e "s|${env.domain}|${settings.domain}|g" /root/ghost/.env
             docker-compose up -d--force-recreate
 
 success: | 
