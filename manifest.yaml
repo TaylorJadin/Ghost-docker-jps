@@ -25,17 +25,17 @@ nodes:
   addons: change-domain
 
 settings:
-domain: 
-  fields: 
-    - name: displayfield
-      type: displayfield
-      hideLabel: true
-      markup: Make sure the the new domain is bound already to the environment via CNAME or via A Record 
-    - name: domain
-      hideLabel: true
-      caption: Domain
-      type: string
-      vtype: extdomain
+  domain:
+    fields:
+      - name: displayfield
+        type: displayfield
+        hideLabel: true
+        markup: 'IMPORTANT: the new domain should be bound already to the environment via CNAME, ANAME or via A Record'
+      - name: domain
+        hideLabel: true
+        caption: Domain
+        type: string
+        vtype: extdomain
 
 onInstall:
   - setup
@@ -66,19 +66,19 @@ actions:
         isDir: true
 
 addons:
-  - id: change-domain    
-    name: Domain Configuration    
+  - id: change-domain
+    name: Domain Configuration
     description: You can change your current domain and issue valid Let's Encrypt certificates.
     permanent: true
-    buttons:    
+    buttons:
       - confirmText: Are you sure you want to proceed?
         loadingText: Changing domain...
         action: changeDomain
         caption: Change
         successText: The domain has been updated successfully!
         settings: domain
-        title: Please specify the new domain name 
-        
+        title: Please specify the new domain name
+
     actions:
       changeDomain:
         - cmd[cp]: |-
