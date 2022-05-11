@@ -4,7 +4,7 @@ version: '1.0'
 appVersion: latest
 name: Ghost (Docker Install)
 baseUrl: https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/master/
-logo: /ghost.png
+logo: /ghost-logo.png
 homepage: https://ghost.org/
 
 categories: 
