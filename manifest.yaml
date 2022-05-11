@@ -23,6 +23,9 @@ nodes:
   cloudlets: 16
   extip: true
 
+onInstall:
+  - setup
+
 actions:
   setup:      
     - cmd[cp]: |-
