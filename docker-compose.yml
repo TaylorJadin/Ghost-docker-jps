@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
 
   nginx-proxy:
-    image: jwilder/nginx-proxy
+    build: .
     volumes: 
       - certs:/etc/nginx/certs:ro
       - /etc/nginx/vhost.d
