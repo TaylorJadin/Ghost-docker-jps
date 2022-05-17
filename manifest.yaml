@@ -48,6 +48,7 @@ actions:
         cd ghost
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/docker-compose.yml
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
+        wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/Dockerfile
         sed -i \
         -e "s|##DOMAIN##|${env.domain}|g" \
         -e "s|##EMAIL##|${user.email}|g" \
