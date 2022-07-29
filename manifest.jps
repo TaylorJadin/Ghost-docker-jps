@@ -40,14 +40,14 @@ settings:
         vtype: extdomain
   mailgun-settings:
     fields:
-      - name: mailgun-from
+      - name: mailgunfrom
         caption: From Address
         type: string
         vtype: email
-      - name: mailgun-username
+      - name: mailgunusername
         caption: Username
         type: string
-      - name: mailgun-password
+      - name: mailgunpassword
         caption: Password
         type: string
         inputType: password
@@ -94,11 +94,7 @@ addons:
     actions:
       changeDomain:
         - cmd[cp]: |-
-            cd ghost
-            sed -i \
-              -e "s|URL=https://.*|URL=https://${settings.domain}|g" \
-              -e "s|LETSENCRYPT_DOMAINS=.*|LETSENCRYPT_DOMAINS=${settings.domain}|g"
-              /root/ghost/.env
+            sed -i -e "s|URL=https://.*|URL=https://${settings.domain}|g" -e "s|LETSENCRYPT_DOMAINS=.*|LETSENCRYPT_DOMAINS=${settings.domain}|g" /root/ghost/.env
             docker-compose up -d --force-recreate
 
   - id: mailgun-setup
@@ -119,10 +115,10 @@ addons:
         - cmd[cp]: |-
             cd ghost
             sed -i \
-              -e "s|mail__from=.*|mail__from=${settings.mailgun-from}|g" \
-              -e "s|mail__options__auth__user=.*|mail__options__auth__user=${settings.mailgun-user}|g" \
-              -e "s|mail__options__auth__pass=.*|mail__options__auth__pass=${settings.mailgun-password}|g"
-              /root/ghost/.env
+            -e "s|MAILFROM=.*|MAILFROM=${settings.mailgunfrom}|g" \
+            -e "s|MAILUSER=.*|MAILUSER=${settings.mailgunuser}|g" \
+            -e "s|MAILPASS=.*|MAILPASS=${settings.mailgunpassword}|g"
+            .env
             docker-compose up -d --force-recreate
 
 success: | 
