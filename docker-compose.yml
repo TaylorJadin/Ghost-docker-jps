@@ -16,13 +16,13 @@ services:
       - VIRTUAL_PORT=2368
       - LETSENCRYPT_HOST=${LETSENCRYPT_DOMAINS}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-      - mail__from=${MAILFROM}
-      - mail__options__host=${MAILHOST}
-      - mail__options__auth__user=${MAILUSER}
-      - mail__options__auth__pass=${MAILPASS}
-      - mail__options__port=${MAILPORT}
-      - mail__options__service=${MAILSERVICE}
-      - mail__transport=${MAILTRANSPORT}
+      - mail__from=${MAIL_FROM}
+      - mail__options__host=${MAIL_HOST}
+      - mail__options__auth__user=${MAIL_USER}
+      - mail__options__auth__pass=${MAIL_PASS}
+      - mail__options__port=${MAIL_PORT}
+      - mail__options__service=${MAIL_SERVICE}
+      - mail__transport=${MAIL_TRANSPORT}
     networks:
       - ghost
     depends_on:
