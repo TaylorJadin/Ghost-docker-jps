@@ -23,6 +23,7 @@ nodes:
   cloudlets: 16
   extip: true
   addons: change-domain
+  volumes: ["/root/ghost"]
 
 settings:
   domain:
@@ -61,11 +62,6 @@ actions:
         nodeGroup: cp
         path: /root/ghost
         keyword: ghost
-        isDir: true
-    - env.file.AddFavorite:
-        nodeGroup: cp
-        path: /root
-        keyword: home
         isDir: true
 
 addons:
