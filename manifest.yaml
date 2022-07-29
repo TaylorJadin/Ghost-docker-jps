@@ -1,6 +1,6 @@
 type: install
 id: ghost-docker
-version: '1.0'
+version: '1.1'
 appVersion: latest
 name: Ghost
 baseUrl: https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/master/
