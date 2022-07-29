@@ -22,7 +22,7 @@ nodes:
   nodeGroup: cp
   cloudlets: 16
   extip: true
-  addons: change-domain
+  addons: [change-domain, mailgun-setup]
   volumes: ["/root/ghost"]
 
 settings:
@@ -38,6 +38,19 @@ settings:
         caption: Domain
         type: string
         vtype: extdomain
+  mailgun-settings:
+    fields:
+      - name: mailgun-from
+        caption: From Address
+        type: string
+        vtype: email
+      - name: mailgun-username
+        caption: Username
+        type: string
+      - name: mailgun-password
+        caption: Password
+        type: string
+        inputType: password
 
 onInstall:
   - setup
@@ -82,9 +95,33 @@ addons:
       changeDomain:
         - cmd[cp]: |-
             cd ghost
-            sed -i .bak \
+            sed -i \
             -e "s|URL=https://.*|URL=https://${settings.domain}|g" \
             -e "s|LETSENCRYPT_DOMAINS=.*|LETSENCRYPT_DOMAINS=${settings.domain}|g"
+            /root/ghost/.env
+            docker-compose up -d --force-recreate
+
+  - id: mailgun-setup
+    name: Mailgun Setup
+    description: Setup Ghost to use Mailgun for newsletters
+    permanent: true
+    buttons:
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Changing ghost configuration...
+        action: mailgunConfig
+        caption: Change
+        successText: Your ghost environment has been updated successfully!
+        settings: mailgun-settings
+        title: Please enter your mailgun details
+
+    actions:
+      mailgunConfig:
+        - cmd[cp]: |-
+            cd ghost
+            sed -i \
+            -e "s|mail__from=.*|mail__from=${settings.mailgun-from}|g" \
+            -e "s|mail__options__auth__user=.*|mail__options__auth__user=${settings.mailgun-user}|g" \
+            -e "s|mail__options__auth__pass=.*|mail__options__auth__pass=${settings.mailgun-password}|g"
             /root/ghost/.env
             docker-compose up -d --force-recreate
 
