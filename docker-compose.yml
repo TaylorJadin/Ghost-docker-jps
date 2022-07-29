@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mariadb:10.8.3
+    image: mariadb
     volumes:
       - ./ghostdb:/var/lib/mysql
     environment:
