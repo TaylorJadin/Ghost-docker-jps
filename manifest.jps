@@ -121,7 +121,7 @@ addons:
             sed -i \
             -e "s|MAILFROM=.*|MAILFROM=${settings.mailgunfrom}|g" \
             -e "s|MAILUSER=.*|MAILUSER=${settings.mailgunuser}|g" \
-            -e "s|MAILPASS=.*|MAILPASS=${settings.mailgunpassword}|g"
+            -e "s|MAILPASS=.*|MAILPASS=${settings.mailgunpassword}|g" \
             .env
             docker-compose up -d --force-recreate
 
