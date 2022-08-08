@@ -22,7 +22,8 @@ nodes:
   nodeGroup: cp
   cloudlets: 16
   extip: true
-  addons: [change-domain, mailgun-setup]
+  displayName: Ghost server
+  addons: [change-domain, mailgun-setup, update-ghost]
   volumes: ["/root/ghost"]
 
 settings:
@@ -80,7 +81,7 @@ actions:
 addons:
   - id: change-domain
     name: Domain Configuration
-    description: You can change your current domain and issue valid Let's Encrypt certificates.
+    description: Change the Domain name for Ghost and issue Let's Encrypt certificates.
     permanent: true
     buttons:
       - confirmText: Are you sure you want to proceed?
@@ -103,14 +104,14 @@ addons:
 
   - id: mailgun-setup
     name: Mailgun Setup
-    description: Setup Ghost to use Mailgun for newsletters
+    description: Configure Ghost to use Mailgun for newsletters
     permanent: true
     buttons:
       - confirmText: Are you sure you want to proceed?
-        loadingText: Changing ghost configuration...
+        loadingText: Changing Ghost configuration...
         action: mailgunConfig
-        caption: Change
-        successText: Your ghost environment has been updated successfully!
+        caption: Configure
+        successText: Your Ghost environment has been re-configured successfully!
         settings: mailgun-settings
         title: Please enter your mailgun details
 
@@ -124,8 +125,28 @@ addons:
             -e "s|MAIL_PASS=.*|MAILPASS=${settings.mailgunpassword}|g" \
             .env
             docker-compose up -d --force-recreate
+    
+  - id: update-ghost
+    name: Update Ghost
+    description: Pull the latest version of the Ghost docker container
+    permanent: true
+    buttons:
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Updating Ghost...
+        action: updateGhost
+        caption: Update
+        successText: Your Ghost environment has been updated!
+        title: Update Ghost
+    actions:
+      updateGhost:
+        -  cmd[cp]: |-
+            cd /root/ghost
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d --force-recreate
 
 success: | 
   **Ghost**: [https://${env.domain}/](https://${env.domain}/)
   - Set up Ghost by visiting [${env.domain}/ghost](https://${env.domain}/ghost)
   - If you want to change the domain name, point an A record at **${nodes.cp.extIPs}** then use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert
+  - Further information on setting up Ghost can be found at [support.reclaimhosting.com/hc/en-us/articles/8024410882839](https://support.reclaimhosting.com/hc/en-us/articles/8024410882839)
