@@ -120,9 +120,9 @@ addons:
         - cmd[cp]: |-
             cd /root/ghost
             sed -i \
-            -e "s|MAIL_FROM=.*|MAILFROM=${settings.mailgunfrom}|g" \
-            -e "s|MAIL_USER=.*|MAILUSER=${settings.mailgunuser}|g" \
-            -e "s|MAIL_PASS=.*|MAILPASS=${settings.mailgunpassword}|g" \
+            -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailgunfrom}|g" \
+            -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailgunuser}|g" \
+            -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailgunpassword}|g" \
             .env
             docker-compose up -d --force-recreate
     
