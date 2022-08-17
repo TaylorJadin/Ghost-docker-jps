@@ -45,6 +45,10 @@ settings:
         caption: From Address
         type: string
         vtype: email
+      - name: mailgunhost
+        caption: SMTP Server
+        type: string
+        inputtype: string
       - name: mailgunuser
         caption: Username
         type: string
@@ -123,6 +127,7 @@ addons:
             -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailgunfrom}|g" \
             -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailgunuser}|g" \
             -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailgunpassword}|g" \
+            -e "s|MAIL_HOST=.*|MAIL_HOST=${settings.mailgunhost}|g" \
             .env
             docker-compose up -d --force-recreate
     
