@@ -39,23 +39,35 @@ settings:
         caption: Domain
         type: string
         vtype: extdomain
-  mailgun-settings:
+  mail-settings:
     fields:
-      - name: mailgunfrom
+      - name: mailfrom
         caption: From Address
         type: string
         vtype: email
-      - name: mailgunhost
-        caption: SMTP Server
-        type: string
-        inputtype: string
-      - name: mailgunuser
+      - name: mailuser
         caption: Username
         type: string
-      - name: mailgunpassword
+      - name: mailpassword
         caption: Password
         type: string
         inputType: password
+      - name: mailhost
+        caption: Host
+        type: string
+        inputtype: string
+      - name: mailport
+        caption: Port
+        type: string
+        inputtype: string
+      - name: mailservice
+        caption: Service
+        type: string
+        inputtype: string
+      - name: mailtransport
+        caption: Transport
+        type: string
+        inputtype: string
 
 onInstall:
   - setup
@@ -106,31 +118,31 @@ addons:
             .env
             docker-compose up -d --force-recreate
 
-  - id: mailgun-setup
-    name: Mailgun Setup
-    description: Configure Ghost to use Mailgun for newsletters
+  - id: mail-setup
+    name: Mail Setup
+    description: Configure Ghost's mail settings
     permanent: true
     buttons:
       - confirmText: Are you sure you want to proceed?
         loadingText: Changing Ghost configuration...
-        action: mailgunConfig
+        action: mailConfig
         caption: Configure
         successText: Your Ghost environment has been re-configured successfully!
-        settings: mailgun-settings
-        title: Please enter your mailgun details
+        settings: mail-settings
+        title: Please enter your mail details
 
     actions:
-      mailgunConfig:
+      mailConfig:
         - cmd[cp]: |-
             cd /root/ghost
             sed -i \
-            -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailgunfrom}|g" \
-            -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailgunuser}|g" \
-            -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailgunpassword}|g" \
-            -e "s|MAIL_HOST=.*|MAIL_HOST=${settings.mailgunhost}|g" \
-            -e "s|MAIL_PORT=.*|MAIL_HOST=${settings.mailgunhost}|g" \
-            -e "s|MAIL_SERVICE=.*|MAIL_HOST=${settings.mailgunhost}|g" \
-            -e "s|MAIL_TRANSPORT=.*|MAIL_HOST=${settings.mailgunhost}|g" \
+            -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailfrom}|g" \
+            -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailuser}|g" \
+            -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailpassword}|g" \
+            -e "s|MAIL_HOST=.*|MAIL_HOST=${settings.mailhost}|g" \
+            -e "s|MAIL_PORT=.*|MAIL_HOST=${settings.mailport}|g" \
+            -e "s|MAIL_SERVICE=.*|MAIL_HOST=${settings.mailservice}|g" \
+            -e "s|MAIL_TRANSPORT=.*|MAIL_HOST=${settings.mailtransport}|g" \
             .env
             docker-compose up -d --force-recreate
     
