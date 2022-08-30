@@ -128,6 +128,9 @@ addons:
             -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailgunuser}|g" \
             -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailgunpassword}|g" \
             -e "s|MAIL_HOST=.*|MAIL_HOST=${settings.mailgunhost}|g" \
+            -e "s|MAIL_PORT=.*|MAIL_HOST=${settings.mailgunhost}|g" \
+            -e "s|MAIL_SERVICE=.*|MAIL_HOST=${settings.mailgunhost}|g" \
+            -e "s|MAIL_TRANSPORT=.*|MAIL_HOST=${settings.mailgunhost}|g" \
             .env
             docker-compose up -d --force-recreate
     
