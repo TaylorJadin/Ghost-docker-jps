@@ -23,7 +23,7 @@ nodes:
   cloudlets: 16
   extip: true
   displayName: Ghost server
-  addons: [change-domain, mailgun-setup, update-ghost]
+  addons: [change-domain, mail-setup, update-ghost]
   volumes: ["/root/ghost"]
 
 settings:
