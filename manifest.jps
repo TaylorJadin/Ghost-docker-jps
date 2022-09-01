@@ -137,9 +137,9 @@ addons:
             cd /root/ghost
             sed -i \
             -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailfrom}|" \
-            -e "s|MAIL_HOST=.*|MAIL_USER=${settings.mailhost}|" \
-            -e "s|MAIL_USER=.*|MAIL_PASS=${settings.mailuser}|" \
-            -e "s|MAIL_PASS=.*|MAIL_HOST=${settings.mailpassword}|" \
+            -e "s|MAIL_HOST=.*|MAIL_HOST=${settings.mailhost}|" \
+            -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailuser}|" \
+            -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailpassword}|" \
             -e "s|MAIL_PORT=.*|MAIL_PORT=${settings.mailport}|" \
             -e "s|MAIL_SERVICE=.*|MAIL_SERVICe=${settings.mailservice}|" \
             -e "s|MAIL_TRANSPORT=.*|MAIL_TRANSPORT=${settings.mailtransport}|" \
