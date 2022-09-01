@@ -136,13 +136,13 @@ addons:
         - cmd[cp]: |-
             cd /root/ghost
             sed -i \
-            -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailfrom}|g" \
-            -e "s|MAIL_HOST=.*|MAIL_USER=${settings.mailhost}|g" \
-            -e "s|MAIL_USER=.*|MAIL_PASS=${settings.mailuser}|g" \
-            -e "s|MAIL_PASS=.*|MAIL_HOST=${settings.mailpassword}|g" \
-            -e "s|MAIL_PORT=.*|MAIL_PORT=${settings.mailport}|g" \
-            -e "s|MAIL_SERVICE=.*|MAIL_SERVICe=${settings.mailservice}|g" \
-            -e "s|MAIL_TRANSPORT=.*|MAIL_TRANSPORT=${settings.mailtransport}|g" \
+            -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailfrom}|" \
+            -e "s|MAIL_HOST=.*|MAIL_USER=${settings.mailhost}|" \
+            -e "s|MAIL_USER=.*|MAIL_PASS=${settings.mailuser}|" \
+            -e "s|MAIL_PASS=.*|MAIL_HOST=${settings.mailpassword}|" \
+            -e "s|MAIL_PORT=.*|MAIL_PORT=${settings.mailport}|" \
+            -e "s|MAIL_SERVICE=.*|MAIL_SERVICe=${settings.mailservice}|" \
+            -e "s|MAIL_TRANSPORT=.*|MAIL_TRANSPORT=${settings.mailtransport}|" \
             .env
             docker-compose up -d --force-recreate
     
