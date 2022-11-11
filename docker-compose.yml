@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mysql
+    image: ariaieboy/low-memory-mysql8
     volumes:
       - ./ghostdb:/var/lib/mysql
     environment:
