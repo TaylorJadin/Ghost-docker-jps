@@ -21,6 +21,7 @@ nodes:
   nodeType: dockerengine
   nodeGroup: cp
   cloudlets: 16
+  fixedcloudlets: 3
   extip: true
   displayName: Ghost server
   addons: [change-domain, mail-setup, update-ghost]
@@ -80,7 +81,6 @@ actions:
         cd ghost
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/docker-compose.yml
         wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
-        wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/Dockerfile
         sed -i \
         -e "s|##DOMAIN##|${env.domain}|g" \
         -e "s|##EMAIL##|${user.email}|g" \
