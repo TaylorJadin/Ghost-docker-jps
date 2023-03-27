@@ -141,7 +141,7 @@ addons:
             -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailuser}|" \
             -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailpassword}|" \
             -e "s|MAIL_PORT=.*|MAIL_PORT=${settings.mailport}|" \
-            -e "s|MAIL_SERVICE=.*|MAIL_SERVICe=${settings.mailservice}|" \
+            -e "s|MAIL_SERVICE=.*|MAIL_SERVICE=${settings.mailservice}|" \
             -e "s|MAIL_TRANSPORT=.*|MAIL_TRANSPORT=${settings.mailtransport}|" \
             .env
             docker-compose up -d --force-recreate
