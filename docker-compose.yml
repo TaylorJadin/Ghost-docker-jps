@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
 
   nginx-proxy:
-    build: https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/Dockerfile
+    build: .
     volumes: 
       - certs:/etc/nginx/certs:ro
       - /etc/nginx/vhost.d
