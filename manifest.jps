@@ -16,6 +16,9 @@ description:
 
 globals:
   ghostdbPass: ${fn.password}
+  shortname: ghost
+  path: /root/ghost
+  repo: https://github.com/taylorjadin/ghost-docker-jps
 
 nodes:
   nodeType: dockerengine
@@ -77,10 +80,13 @@ actions:
   setup:      
     - cmd[cp]: |-
         yum update -y
-        mkdir -p ghost
-        cd ghost
-        wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/docker-compose.yml
-        wget https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/main/.env
+        mkdir -p ${globals.path}
+        cd ${globals.path}
+        git clone ${globals.repo} --depth 1 .
+        rm -rf .git
+        rm manifest.jps
+        rm ghost-logo.png
+        .gitattributes
         sed -i \
         -e "s|##DOMAIN##|${env.domain}|g" \
         -e "s|##EMAIL##|${user.email}|g" \
@@ -90,7 +96,7 @@ actions:
         docker-compose up -d
     - env.file.AddFavorite:
         nodeGroup: cp
-        path: /root/ghost
+        path: ${globals.path}
         keyword: ghost
         isDir: true
 
@@ -111,7 +117,7 @@ addons:
     actions:
       changeDomain:
         - cmd[cp]: |-
-            cd /root/ghost
+            cd ${globals.path}
             sed -i \
             -e "s|URL=https://.*|URL=https://${settings.domain}|g" \
             -e "s|LETSENCRYPT_DOMAINS=.*|LETSENCRYPT_DOMAINS=${settings.domain}|g" \
@@ -134,7 +140,7 @@ addons:
     actions:
       mailConfig:
         - cmd[cp]: |-
-            cd /root/ghost
+            cd ${globals.path}
             sed -i \
             -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailfrom}|" \
             -e "s|MAIL_HOST=.*|MAIL_HOST=${settings.mailhost}|" \
@@ -160,7 +166,7 @@ addons:
     actions:
       updateGhost:
         -  cmd[cp]: |-
-            cd /root/ghost
+            cd ${globals.path}
             docker-compose pull
             docker-compose down
             docker-compose up -d --force-recreate
