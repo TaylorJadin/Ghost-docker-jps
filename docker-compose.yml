@@ -3,6 +3,7 @@ version: "2"
 services:
   ghost:
     image: ghost:alpine
+    container_name: ghost
     volumes:
       - ./ghostdata:/var/lib/ghost/content
     environment:
@@ -23,14 +24,13 @@ services:
       - mail__options__port=${MAIL_PORT}
       - mail__options__service=${MAIL_SERVICE}
       - mail__transport=${MAIL_TRANSPORT}
-    networks:
-      - ghost
     depends_on:
       - db
     restart: unless-stopped
 
   db:
     image: ariaieboy/low-memory-mysql8:latest # or you can use: mysql:8.0
+    container_name: ghostdb
     volumes:
       - ./ghostdb:/var/lib/mysql
     environment:
@@ -38,36 +38,35 @@ services:
       - MYSQL_DATABASE=ghostdb
       - MYSQL_USER=ghostdb
       - MYSQL_PASSWORD=${GHOSTDB_PASSWORD}
-    networks:
-      - ghost
     restart: unless-stopped
 
   nginx-proxy:
-    build: .
-    volumes: 
+    build: 
+      context: .
+      dockerfile: nginx.dockerfile
+    container_name: nginx-proxy 
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
       - certs:/etc/nginx/certs:ro
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - ghost
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: ""
     restart: unless-stopped
 
   letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    image: nginxproxy/acme-companion
+    container_name: letsencrypt 
     volumes:
       - certs:/etc/nginx/certs
       - /var/run/docker.sock:/var/run/docker.sock:ro
     volumes_from:
       - nginx-proxy
-    networks:
-      - ghost
     restart: unless-stopped
+
   
 #  Optional DB admin web interface, uncomment the next 4 lines if you want to use this temporarily
 #  adminer:
@@ -77,6 +76,3 @@ services:
 
 volumes:
   certs:
-
-networks:
-  ghost:
