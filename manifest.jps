@@ -84,9 +84,9 @@ actions:
         cd ${globals.path}
         git clone ${globals.repo} --depth 1 .
         rm -rf .git
-        rm manifest.jps
+        rm manifest.yaml
         rm ghost-logo.png
-        .gitattributes
+        rm .gitattributes
         sed -i \
         -e "s|##DOMAIN##|${env.domain}|g" \
         -e "s|##EMAIL##|${user.email}|g" \
