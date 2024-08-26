@@ -60,6 +60,7 @@ services:
   letsencrypt:
     image: nginxproxy/acme-companion
     container_name: letsencrypt 
+# Uncomment the next two lines to use ZeroSSL instead of Let's Encrypt certs
 #    environment:
 #      - ACME_CA_URI=https://acme.zerossl.com/v2/DV90
     volumes:
