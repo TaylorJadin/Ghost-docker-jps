@@ -60,6 +60,8 @@ services:
   letsencrypt:
     image: nginxproxy/acme-companion
     container_name: letsencrypt 
+    environment:
+      - ACME_CA_URI=https://acme.zerossl.com/v2/DV90
     volumes:
       - certs:/etc/nginx/certs
       - /var/run/docker.sock:/var/run/docker.sock:ro
