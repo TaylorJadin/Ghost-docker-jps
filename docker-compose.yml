@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: ariaieboy/low-memory-mysql8:latest # or you can use: mysql:8.0
+    image: mysql:8.0
     container_name: ghostdb
     volumes:
       - ./ghostdb:/var/lib/mysql
