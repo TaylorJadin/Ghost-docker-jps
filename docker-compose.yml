@@ -1,11 +1,9 @@
-version: "2.4"
-
 services:
   ghost:
     image: ghost:alpine
     container_name: ghost
     volumes:
-      - ./ghostdata:/var/lib/ghost/content
+      - ./content:/var/lib/ghost/content
     environment:
       - url=${URL}
       - database__client=mysql
@@ -29,10 +27,12 @@ services:
     restart: unless-stopped
 
   db:
-    image: mysql:8.0
-    container_name: ghostdb
+    build: 
+      context: .
+      dockerfile: mysql.dockerfile
+    container_name: db
     volumes:
-      - ./ghostdb:/var/lib/mysql
+      - ./db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${ROOTDB_PASSWORD}
       - MYSQL_DATABASE=ghostdb
@@ -59,7 +59,7 @@ services:
 
   letsencrypt:
     image: nginxproxy/acme-companion
-    container_name: letsencrypt 
+    container_name: acme 
 # Uncomment the next two lines to use ZeroSSL instead of Let's Encrypt certs
 #    environment:
 #      - ACME_CA_URI=https://acme.zerossl.com/v2/DV90
