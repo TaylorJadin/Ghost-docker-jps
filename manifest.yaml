@@ -79,7 +79,6 @@ onInstall:
 actions:
   setup:      
     - cmd[cp]: |-
-        yum update -y
         mkdir -p ${globals.path}
         cd ${globals.path}
         git clone ${globals.repo} --depth 1 .
