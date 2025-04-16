@@ -139,6 +139,7 @@ addons:
     actions:
       mailConfig:
         - cmd[cp]: |-
+            yum update -y
             cd ${globals.path}
             sed -i \
             -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailfrom}|" \
