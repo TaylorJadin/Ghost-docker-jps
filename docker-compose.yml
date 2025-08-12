@@ -11,7 +11,7 @@ services:
       - database__connection__user=ghostdb
       - database__connection__password=${GHOSTDB_PASSWORD}
       - database__connection__database=ghostdb
-      - security__staffDeviceVerification=${DEVICE_VERIFICATION}
+      - security__staffDeviceVerification=${DEVICE_VERIFICATION_EMAILS}
       - VIRTUAL_HOST=${LETSENCRYPT_DOMAINS}
       - VIRTUAL_PORT=2368
       - LETSENCRYPT_HOST=${LETSENCRYPT_DOMAINS}
