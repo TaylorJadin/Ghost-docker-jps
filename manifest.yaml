@@ -1,6 +1,6 @@
 type: install
 id: ghost-docker
-version: '1.0'
+version: '2.0'
 appVersion: latest
 name: Ghost
 baseUrl: https://raw.githubusercontent.com/TaylorJadin/Ghost-docker-jps/master/
@@ -18,8 +18,8 @@ globals:
   ghostdbPass: ${fn.password}
   shortname: ghost
   path: /root/ghost
-  repo: https://github.com/taylorjadin/ghost-docker-jps
-
+  repo: https://github.com/TryGhost/ghost-docker.git
+  
 nodes:
   nodeType: dockerengine
   nodeGroup: cp
@@ -81,18 +81,37 @@ actions:
     - cmd[cp]: |-
         mkdir -p ${globals.path}
         cd ${globals.path}
-        git clone ${globals.repo} --depth 1 .
-        rm -rf .git
-        rm manifest.yaml
-        rm ghost-logo.png
-        rm .gitattributes
+        # Clear out old files if they exist to ensure clean slate for git clone
+        rm -rf .git manifest.yaml ghost-logo.png .gitattributes
+        
+        # Clone official repo
+        git clone ${globals.repo} .
+
+        # Create symlink to /opt/ghost
+        ln -s ${globals.path} /opt/ghost
+        
+        # Configure file structure
+        cp .env.example .env
+        cp caddy/Caddyfile.example caddy/Caddyfile
+        
+        # Configure .env
         sed -i \
-        -e "s|##DOMAIN##|${env.domain}|g" \
-        -e "s|##EMAIL##|${user.email}|g" \
-        -e "s|##DBPASS##|${globals.ghostdbPass}|g" \
-        -e "s|##ROOTDBPASS##|${fn.password}|g" \
+        -e "s|DOMAIN=.*|DOMAIN=${env.domain}|g" \
+        -e "s|DATABASE_ROOT_PASSWORD=.*|DATABASE_ROOT_PASSWORD=${fn.password}|g" \
+        -e "s|DATABASE_PASSWORD=.*|DATABASE_PASSWORD=${globals.ghostdbPass}|g" \
+        -e "s|mail__transport=.*|mail__transport=${settings.mailtransport}|g" \
+        -e "s|mail__options__host=.*|mail__options__host=${settings.mailhost}|g" \
+        -e "s|mail__options__port=.*|mail__options__port=${settings.mailport}|g" \
+        -e "s|mail__options__auth__user=.*|mail__options__auth__user=${settings.mailuser}|g" \
+        -e "s|mail__options__auth__pass=.*|mail__options__auth__pass=${settings.mailpassword}|g" \
+        -e "s|mail__from=.*|mail__from=\"${settings.mailfrom}\"|g" \
         .env
-        docker-compose up -d
+
+        # Enable ActivityPub
+        sed -i 's|# COMPOSE_PROFILES=analytics,activitypub|COMPOSE_PROFILES=activitypub|g' .env
+        sed -i 's|# ACTIVITYPUB_TARGET=activitypub:8080|ACTIVITYPUB_TARGET=activitypub:8080|g' .env
+
+        docker compose up -d
     - env.file.AddFavorite:
         nodeGroup: cp
         path: ${globals.path}
@@ -102,7 +121,7 @@ actions:
 addons:
   - id: change-domain
     name: Domain Configuration
-    description: Change the Domain name for Ghost and issue Let's Encrypt certificates.
+    description: Change the Domain name for Ghost and Caddy.
     permanent: true
     buttons:
       - confirmText: Are you sure you want to proceed?
@@ -117,11 +136,8 @@ addons:
       changeDomain:
         - cmd[cp]: |-
             cd ${globals.path}
-            sed -i \
-            -e "s|URL=https://.*|URL=https://${settings.domain}|g" \
-            -e "s|LETSENCRYPT_DOMAINS=.*|LETSENCRYPT_DOMAINS=${settings.domain}|g" \
-            .env
-            docker-compose up -d --force-recreate
+            sed -i "s|DOMAIN=.*|DOMAIN=${settings.domain}|g" .env
+            docker compose up -d --force-recreate
 
   - id: mail-setup
     name: Mail Setup
@@ -141,15 +157,15 @@ addons:
         - cmd[cp]: |-
             cd ${globals.path}
             sed -i \
-            -e "s|MAIL_FROM=.*|MAIL_FROM=${settings.mailfrom}|" \
-            -e "s|MAIL_HOST=.*|MAIL_HOST=${settings.mailhost}|" \
-            -e "s|MAIL_USER=.*|MAIL_USER=${settings.mailuser}|" \
-            -e "s|MAIL_PASS=.*|MAIL_PASS=${settings.mailpassword}|" \
-            -e "s|MAIL_PORT=.*|MAIL_PORT=${settings.mailport}|" \
-            -e "s|MAIL_SERVICE=.*|MAIL_SERVICE=${settings.mailservice}|" \
-            -e "s|MAIL_TRANSPORT=.*|MAIL_TRANSPORT=${settings.mailtransport}|" \
+            -e "s|mail__from=.*|mail__from=\"${settings.mailfrom}\"|" \
+            -e "s|mail__options__host=.*|mail__options__host=${settings.mailhost}|" \
+            -e "s|mail__options__auth__user=.*|mail__options__auth__user=${settings.mailuser}|" \
+            -e "s|mail__options__auth__pass=.*|mail__options__auth__pass=${settings.mailpassword}|" \
+            -e "s|mail__options__port=.*|mail__options__port=${settings.mailport}|" \
+            -e "s|mail__options__service=.*|mail__options__service=${settings.mailservice}|" \
+            -e "s|mail__transport=.*|mail__transport=${settings.mailtransport}|" \
             .env
-            docker-compose up -d --force-recreate
+            docker compose up -d --force-recreate
     
   - id: update-ghost
     name: Update Ghost
@@ -166,12 +182,12 @@ addons:
       updateGhost:
         -  cmd[cp]: |-
             cd ${globals.path}
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d --force-recreate
+            docker compose pull
+            docker compose down
+            docker compose up -d --force-recreate
 
 success: | 
   **Ghost**: [https://${env.domain}/](https://${env.domain}/)
   - Set up Ghost by visiting [${env.domain}/ghost](https://${env.domain}/ghost)
-  - If you want to change the domain name, point an A record at **${nodes.cp.extIPs}** then use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert
+  - If you want to change the domain name, point an A record at **${nodes.cp.extIPs}** then use the **Domain Configuration** Add-On to change the domain name.
   - Further information on setting up Ghost can be found at [support.reclaimhosting.com/hc/en-us/articles/8024410882839](https://support.reclaimhosting.com/hc/en-us/articles/8024410882839)
