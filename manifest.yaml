@@ -45,6 +45,11 @@ settings:
         vtype: extdomain
   mail-settings:
     fields:
+      - name: displayfield
+        type: displayfield
+        hideLabel: true
+        markup: |
+          Please configure mail settings to enable transactional email notifications. This is required for features such as password reset and notifications but is not used or related to bulk mail / newsletter sending.
       - name: mailfrom
         caption: From Address
         type: string
@@ -62,14 +67,6 @@ settings:
         inputtype: string
       - name: mailport
         caption: Port
-        type: string
-        inputtype: string
-      - name: mailservice
-        caption: Service
-        type: string
-        inputtype: string
-      - name: mailtransport
-        caption: Transport
         type: string
         inputtype: string
 
@@ -99,17 +96,17 @@ actions:
         -e "s|DOMAIN=.*|DOMAIN=${env.domain}|g" \
         -e "s|DATABASE_ROOT_PASSWORD=.*|DATABASE_ROOT_PASSWORD=${fn.password}|g" \
         -e "s|DATABASE_PASSWORD=.*|DATABASE_PASSWORD=${globals.ghostdbPass}|g" \
-        -e "s|mail__transport=.*|mail__transport=${settings.mailtransport}|g" \
-        -e "s|mail__options__host=.*|mail__options__host=${settings.mailhost}|g" \
-        -e "s|mail__options__port=.*|mail__options__port=${settings.mailport}|g" \
-        -e "s|mail__options__auth__user=.*|mail__options__auth__user=${settings.mailuser}|g" \
-        -e "s|mail__options__auth__pass=.*|mail__options__auth__pass=${settings.mailpassword}|g" \
-        -e "s|mail__from=.*|mail__from=\"${settings.mailfrom}\"|g" \
         .env
 
         # Enable ActivityPub
-        sed -i 's|# COMPOSE_PROFILES=analytics,activitypub|COMPOSE_PROFILES=activitypub|g' .env
+        sed -i '/# COMPOSE_PROFILES=analytics,activitypub/a COMPOSE_PROFILES=activitypub' .env
         sed -i 's|# ACTIVITYPUB_TARGET=activitypub:8080|ACTIVITYPUB_TARGET=activitypub:8080|g' .env
+
+        # Disable Device Verification Emails by default
+        echo "" >> .env
+        echo "# If set to true, Ghost will send a device verification email when it detects a login from a new device" >> .env
+        echo "# https://docs.ghost.org/config#security" >> .env
+        echo "DEVICE_VERIFICATION_EMAILS=false" >> .env
 
         docker compose up -d
     - env.file.AddFavorite:
@@ -162,8 +159,6 @@ addons:
             -e "s|mail__options__auth__user=.*|mail__options__auth__user=${settings.mailuser}|" \
             -e "s|mail__options__auth__pass=.*|mail__options__auth__pass=${settings.mailpassword}|" \
             -e "s|mail__options__port=.*|mail__options__port=${settings.mailport}|" \
-            -e "s|mail__options__service=.*|mail__options__service=${settings.mailservice}|" \
-            -e "s|mail__transport=.*|mail__transport=${settings.mailtransport}|" \
             .env
             docker compose up -d --force-recreate
     

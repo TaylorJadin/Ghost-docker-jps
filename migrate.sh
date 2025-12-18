@@ -82,8 +82,14 @@ sed -i "s|mail__options__auth__pass=1234567890|mail__options__auth__pass=$MAIL_P
 sed -i "s|mail__from=\"'Acme Support' <support@example.com>\"|mail__from=\"$MAIL_FROM\"|g" .env
 
 # Enable ActivityPub
-sed -i 's|# COMPOSE_PROFILES=analytics,activitypub|COMPOSE_PROFILES=activitypub|g' .env
+sed -i '/# COMPOSE_PROFILES=analytics,activitypub/a COMPOSE_PROFILES=activitypub' .env
 sed -i 's|# ACTIVITYPUB_TARGET=activitypub:8080|ACTIVITYPUB_TARGET=activitypub:8080|g' .env
+
+# Disable Device Verification Emails by default
+echo "" >> .env
+echo "# If set to true, Ghost will send a device verification email when it detects a login from a new device" >> .env
+echo "# https://docs.ghost.org/config#security" >> .env
+echo "DEVICE_VERIFICATION_EMAILS=false" >> .env
 
 echo "Starting new stack..."
 docker compose up -d
