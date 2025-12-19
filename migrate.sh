@@ -33,17 +33,16 @@ fi
 echo "Stopping old containers..."
 docker compose down || docker-compose down
 
-# Move contentes of $GHOST_DIR (including dotfiles) to backup directory
+# Move contents of $GHOST_DIR (including dotfiles) to backup directory
 cd /root || exit 1
 mv "$GHOST_DIR" "$BACKUP_DIR"
 
-# Set up new install
+# Set up new install folder
 mkdir "$GHOST_DIR"
 cd "$GHOST_DIR" || exit 1
 
 # create symlink from $GHOST_DIR to /opt/ghost
 ln -s $GHOST_DIR /opt/ghost
-
 
 echo "Cloning official ghost-docker repo..."
 git clone https://github.com/TryGhost/ghost-docker.git .
