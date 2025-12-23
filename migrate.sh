@@ -2,7 +2,7 @@
 # Migration script for Ghost JPS (old structure -> new official ghost-docker structure)
 
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
-BACKUP_DIR="backup_$TIMESTAMP"
+BACKUP_DIR="/root/backup_$TIMESTAMP"
 GHOST_DIR="/root/ghost"
 
 echo "Starting migration..."
@@ -33,11 +33,11 @@ fi
 echo "Stopping old containers..."
 docker compose down || docker-compose down
 
-# Move contents of $GHOST_DIR (including dotfiles) to backup directory
+echo "Backing up $GHOST_DIR to $BACKUP_DIR ..."
 cd /root || exit 1
 mv "$GHOST_DIR" "$BACKUP_DIR"
 
-# Set up new install folder
+echo "Setting up new Ghost install..."
 mkdir "$GHOST_DIR"
 cd "$GHOST_DIR" || exit 1
 
@@ -47,15 +47,11 @@ ln -s $GHOST_DIR /opt/ghost
 echo "Cloning official ghost-docker repo..."
 git clone https://github.com/TryGhost/ghost-docker.git .
 
-echo "Restoring content..."
-mkdir -p data/ghost
-cp -r "$BACKUP_DIR/content/"* data/ghost/
-
 echo "Configuring new environment..."
 cp .env.example .env
 cp caddy/Caddyfile.example caddy/Caddyfile
 
-# Extract variables from old .env (stored in backup)
+# Extract variables from old .env
 OLD_ENV="$BACKUP_DIR/.env"
 DOMAIN=$(grep "^URL=" "$OLD_ENV" | cut -d'=' -f2 | sed 's|https://||')
 if [ -z "$DOMAIN" ]; then DOMAIN=$(grep "^LETSENCRYPT_DOMAINS=" "$OLD_ENV" | cut -d'=' -f2); fi
@@ -74,7 +70,7 @@ sed -i "s|DOMAIN=example.com|DOMAIN=$DOMAIN|g" .env
 sed -i "s|DATABASE_ROOT_PASSWORD=reallysecurerootpassword|DATABASE_ROOT_PASSWORD=$OLD_ROOT_DB_PASS|g" .env
 sed -i "s|DATABASE_PASSWORD=ghostpassword|DATABASE_PASSWORD=$OLD_GHOST_DB_PASS|g" .env
 
-# Mail
+# Mail settings
 sed -i "s|mail__options__host=smtp.example.com|mail__options__host=$MAIL_HOST|g" .env
 sed -i "s|mail__options__auth__user=support@example.com|mail__options__auth__user=$MAIL_USER|g" .env
 sed -i "s|mail__options__auth__pass=1234567890|mail__options__auth__pass=$MAIL_PASS|g" .env
@@ -91,11 +87,15 @@ echo "# We recommend enabling this feature after you have SMTP set up for transa
 echo "# https://docs.ghost.org/config#security" >> .env
 echo "security__staffDeviceVerification=false" >> .env
 
+echo "Restoring content from $BACKUP_DIR ..."
+mkdir -p data/ghost
+cp -r "$BACKUP_DIR/content/"* data/ghost/
+
 echo "Starting new stack..."
 docker compose up -d
 
-echo "Waiting for database to initialize (20s)..."
-sleep 20
+echo "Waiting for database to initialize (30s)..."
+sleep 30
 
 echo "Importing database dump..."
 docker compose exec -T db mysql -u root -p$OLD_ROOT_DB_PASS < "$BACKUP_DIR/dump.sql"
@@ -104,4 +104,3 @@ echo "Restarting ghost to ensure it picks up the DB..."
 docker compose restart ghost
 
 echo "Migration complete!"
-echo "Backup stored in $BACKUP_DIR"
