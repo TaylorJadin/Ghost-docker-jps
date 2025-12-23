@@ -87,8 +87,9 @@ sed -i 's|# ACTIVITYPUB_TARGET=activitypub:8080|ACTIVITYPUB_TARGET=activitypub:8
 # Disable Device Verification Emails by default
 echo "" >> .env
 echo "# If set to true, Ghost will send a device verification email when it detects a login from a new device" >> .env
+echo "# We recommend enabling this feature after you have SMTP set up for transactional email." >> .env
 echo "# https://docs.ghost.org/config#security" >> .env
-echo "DEVICE_VERIFICATION_EMAILS=false" >> .env
+echo "security__staffDeviceVerification=false" >> .env
 
 echo "Starting new stack..."
 docker compose up -d
