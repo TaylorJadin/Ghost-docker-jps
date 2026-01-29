@@ -14,6 +14,7 @@ if [ ! -f "$GHOST_DIR/docker-compose.yml" ]; then
 fi
 
 cd "$GHOST_DIR" || exit 1
+source $GHOST_DIR/.env
 
 echo "Backing up database..."
 
