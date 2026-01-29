@@ -116,6 +116,10 @@ else
     echo "Warning: Neither 'content' nor 'ghostdata' folder found in $BACKUP_DIR"
 fi
 
+echo "Ready to start up Ghost and then import the datase."
+echo -n "Press any key to continue..."
+read
+
 echo "Starting new stack..."
 docker compose up -d
 
