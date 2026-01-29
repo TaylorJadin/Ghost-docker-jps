@@ -4,39 +4,56 @@
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 BACKUP_DIR="/root/backup_$TIMESTAMP"
 GHOST_DIR="/root/ghost"
+SKIP_TO_INSTALL=false
 
 echo "Starting migration..."
 
-# Verification
-if [ ! -f "$GHOST_DIR/docker-compose.yml" ]; then
-    echo "Error: Old docker-compose.yml not found in $GHOST_DIR. Are you sure you are in the right place?"
-    exit 1
+# Check if GHOST_DIR doesn't exist but a backup directory does
+if [ ! -d "$GHOST_DIR" ]; then
+    EXISTING_BACKUP=$(ls -d /root/backup_* 2>/dev/null | head -n 1)
+    if [ -n "$EXISTING_BACKUP" ]; then
+        echo "Ghost directory not found, but existing backup detected at $EXISTING_BACKUP"
+        echo "Resuming migration from backup..."
+        BACKUP_DIR="$EXISTING_BACKUP"
+        SKIP_TO_INSTALL=true
+    else
+        echo "Error: $GHOST_DIR does not exist and no backup found."
+        exit 1
+    fi
 fi
 
-cd "$GHOST_DIR" || exit 1
-source $GHOST_DIR/.env
+if [ "$SKIP_TO_INSTALL" = false ]; then
+    # Verification
+    if [ ! -f "$GHOST_DIR/docker-compose.yml" ]; then
+        echo "Error: Old docker-compose.yml not found in $GHOST_DIR. Are you sure you are in the right place?"
+        exit 1
+    fi
 
-echo "Backing up database..."
+    cd "$GHOST_DIR" || exit 1
+    source $GHOST_DIR/.env
 
-# Dump database from the old 'db' container
-container_id=$(docker ps -qf "name=ghost-db" -f "name=db" | head -n 1) # Trying generic name or name in jps
+    echo "Backing up database..."
 
-docker compose exec db mysqldump -u root -p${ROOTDB_PASSWORD} --all-databases > "$GHOST_DIR/dump.sql" || {
-    echo "Warning: Database dump failed using 'docker compose exec'. Trying 'docker-compose'..."
-    docker-compose exec db mysqldump -u root -p${ROOTDB_PASSWORD} --all-databases > "$GHOST_DIR/dump.sql"
-}
+    # Dump database from the old 'db' container
+    container_id=$(docker ps -qf "name=ghost-db" -f "name=db" | head -n 1) # Trying generic name or name in jps
 
-if [ ! -f "$GHOST_DIR/dump.sql" ]; then
-    echo "CRITICAL: Database backup failed. Aborting."
-    exit 1
+    docker compose exec db mysqldump -u root -p${ROOTDB_PASSWORD} --all-databases > "$GHOST_DIR/dump.sql" || {
+        echo "Warning: Database dump failed using 'docker compose exec'. Trying 'docker-compose'..."
+        docker-compose exec db mysqldump -u root -p${ROOTDB_PASSWORD} --all-databases > "$GHOST_DIR/dump.sql"
+    }
+
+    if [ ! -f "$GHOST_DIR/dump.sql" ]; then
+        echo "CRITICAL: Database backup failed. Aborting."
+        exit 1
+    fi
+
+    echo "Stopping old containers..."
+    docker compose down || docker-compose down
+
+    echo "Backing up $GHOST_DIR to $BACKUP_DIR ..."
+    cd /root || exit 1
+    mv "$GHOST_DIR" "$BACKUP_DIR"
 fi
-
-echo "Stopping old containers..."
-docker compose down || docker-compose down
-
-echo "Backing up $GHOST_DIR to $BACKUP_DIR ..."
-cd /root || exit 1
-mv "$GHOST_DIR" "$BACKUP_DIR"
 
 echo "Setting up new Ghost install..."
 mkdir "$GHOST_DIR"
@@ -90,7 +107,17 @@ echo "security__staffDeviceVerification=false" >> .env
 
 echo "Restoring content from $BACKUP_DIR ..."
 mkdir -p data/ghost
-cp -r "$BACKUP_DIR/content/"* data/ghost/
+
+# Handle both possible content folder names (content or ghostdata)
+if [ -d "$BACKUP_DIR/content" ]; then
+    echo "Found content folder, copying..."
+    cp -r "$BACKUP_DIR/content/"* data/ghost/
+elif [ -d "$BACKUP_DIR/ghostdata" ]; then
+    echo "Found ghostdata folder, copying..."
+    cp -r "$BACKUP_DIR/ghostdata/"* data/ghost/
+else
+    echo "Warning: Neither 'content' nor 'ghostdata' folder found in $BACKUP_DIR"
+fi
 
 echo "Starting new stack..."
 docker compose up -d
