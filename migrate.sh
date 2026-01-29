@@ -55,15 +55,12 @@ if [ "$SKIP_TO_INSTALL" = false ]; then
     mv "$GHOST_DIR" "$BACKUP_DIR"
 fi
 
-echo "Setting up new Ghost install..."
-mkdir "$GHOST_DIR"
+echo "Cloning official ghost-docker repo..."
+git clone https://github.com/TryGhost/ghost-docker.git $GHOST_DIR
 cd "$GHOST_DIR" || exit 1
 
 # create symlink from $GHOST_DIR to /opt/ghost
 ln -s $GHOST_DIR /opt/ghost
-
-echo "Cloning official ghost-docker repo..."
-git clone https://github.com/TryGhost/ghost-docker.git .
 
 echo "Configuring new environment..."
 cp .env.example .env
