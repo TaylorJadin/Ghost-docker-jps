@@ -80,6 +80,11 @@ MAIL_FROM=$(grep "^MAIL_FROM=" "$OLD_ENV" | cut -d'=' -f2)
 OLD_GHOST_DB_PASS=$(grep "^GHOSTDB_PASSWORD=" "$OLD_ENV" | cut -d'=' -f2)
 OLD_ROOT_DB_PASS=$(grep "^ROOTDB_PASSWORD=" "$OLD_ENV" | cut -d'=' -f2)
 
+DATABASE_NAME=$(grep "^DATABASE_NAME=" .env | cut -d'=' -f2)
+DATABASE_USER=$(grep "^DATABASE_USER=" .env | cut -d'=' -f2)
+DATABASE_NAME=${DATABASE_NAME:-ghost}
+DATABASE_USER=${DATABASE_USER:-ghost}
+
 # Update new .env
 sed -i "s|DOMAIN=example.com|DOMAIN=$DOMAIN|g" .env
 sed -i "s|DATABASE_ROOT_PASSWORD=reallysecurerootpassword|DATABASE_ROOT_PASSWORD=$OLD_ROOT_DB_PASS|g" .env
@@ -128,6 +133,17 @@ sleep 30
 
 echo "Importing database dump..."
 docker compose exec -T db mysql -u root -p$OLD_ROOT_DB_PASS < "$BACKUP_DIR/dump.sql"
+
+echo "Ensuring database name/user are correct..."
+docker compose exec -T db mysql -u root -p$OLD_ROOT_DB_PASS -e "CREATE DATABASE IF NOT EXISTS \`$DATABASE_NAME\`; CREATE USER IF NOT EXISTS '$DATABASE_USER'@'%' IDENTIFIED BY '$OLD_GHOST_DB_PASS'; GRANT ALL PRIVILEGES ON \`$DATABASE_NAME\`.* TO '$DATABASE_USER'@'%'; FLUSH PRIVILEGES;"
+
+if [ "$DATABASE_NAME" != "ghostdb" ]; then
+    if docker compose exec -T db mysql -u root -p$OLD_ROOT_DB_PASS -e "SHOW DATABASES LIKE 'ghostdb';" | grep -q ghostdb; then
+        echo "Found legacy ghostdb database. Copying into $DATABASE_NAME and removing ghostdb..."
+        docker compose exec -T db mysqldump -u root -p$OLD_ROOT_DB_PASS ghostdb | docker compose exec -T db mysql -u root -p$OLD_ROOT_DB_PASS "$DATABASE_NAME"
+        docker compose exec -T db mysql -u root -p$OLD_ROOT_DB_PASS -e "DROP DATABASE ghostdb;"
+    fi
+fi
 
 echo "Restarting ghost to ensure it picks up the DB..."
 docker compose restart ghost
